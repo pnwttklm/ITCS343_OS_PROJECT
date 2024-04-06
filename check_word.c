@@ -2,36 +2,37 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_WORD_LENGTH 100 // Maximum length of a word
+
 int main() {
     FILE *file;
-    char word[100];
-    char filename[] = "list.txt";
-    int found = 0;
+    char *words[1000]; // Array to store words, assuming there are 1000 words
+    char word[MAX_WORD_LENGTH];
+    int word_count = 0;
 
-    // Open the file containing the word list
-    file = fopen(filename, "r");
+    // Open the file
+    file = fopen("list.txt", "r");
     if (file == NULL) {
-        printf("Unable to open file %s.\n", filename);
+        fprintf(stderr, "Error opening file\n");
         return 1;
     }
 
-    // Get the word to search for from user input
-    printf("Enter the word to search for: ");
-    fgets(word, sizeof(word), stdin);
+    // Read each word from the file and store it in the array
+    while (fgets(word, MAX_WORD_LENGTH, file)) {
+        // Remove the newline character if present
+        word[strcspn(word, "\n")] = 0;
 
-    // Remove newline character if present
-    if (word[strlen(word) - 1] == '\n')
-        word[strlen(word) - 1] = '\0';
+        // Allocate memory for the word and copy it into the array
+        words[word_count] = malloc(strlen(word) + 1); // +1 for null terminator
+        if (words[word_count] == NULL) {
+            fprintf(stderr, "Memory allocation failed\n");
+            return 1;
+        }
+        strcpy(words[word_count], word);
+        word_count++;
 
-    // Check if the entered word is in the word list
-    while (fgets(word, sizeof(word), file)) {
-        // Remove newline character if present
-        if (word[strlen(word) - 1] == '\n')
-            word[strlen(word) - 1] = '\0';
-
-        // Compare word with user input
-        if (strcmp(word, user_input) == 0) {
-            found = 1;
+        // Break if reached the limit of words
+        if (word_count >= 1000) {
             break;
         }
     }
@@ -39,13 +40,24 @@ int main() {
     // Close the file
     fclose(file);
 
-    // Output whether the word is in the list or not
-    if (found) {
-        printf("The word '%s' is in the list.\n", user_input);
-    } else {
-        printf("The word '%s' is not in the list.\n", user_input);
+    // Now you have all words in the 'words' array
+    // Do whatever you need to do with the array here
+    // char input[100];
+    // char input = "cat";
+    for(int i = 0; i < word_count; i++) {
+        if(strcmp(words[i], "a") == 0) {
+            printf("Found the word cat at index %d\n", i);
+            break;
+        }
+        if(i == word_count - 1) {
+            printf("Word not found\n");
+        }
+    }
+
+    // Free memory for each word
+    for (int i = 0; i < word_count; i++) {
+        free(words[i]);
     }
 
     return 0;
 }
-
