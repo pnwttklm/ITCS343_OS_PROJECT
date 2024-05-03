@@ -2,6 +2,9 @@
 *.d
 .vscode/*
 .vscode/
+.vscode
+.git
+.gitignore
 # Object files
 *.o
 *.ko
